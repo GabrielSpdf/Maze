@@ -12,16 +12,22 @@ int main()
 
     printf("Selecione a dificuldade: \n");
     printf("1 - Facil\n2 - Medio\n3 - Dificil\n");
-    fflush(stdin);
-    input = getch();
+    int escolher;
 
-    if(input == 1)
+    scanf("%d", &escolher);
+
+    if(escolher == 1)
     {
+         printf("oi");
         modo = FACIL;
-        int **mapa = (int**) malloc (FACIL * sizeof(int*));
+        mapa = (int**) malloc (FACIL * sizeof(int*));
         for(int i=0; i<FACIL; i++)
         {
             mapa[i] = (int*) malloc (FACIL * sizeof(int));
+        }
+
+        for(int i=0; i<FACIL; i++)
+        {
             for(int j=0; j<FACIL; j++)
             {
                 mapa[i][j] = mapa1[i][j];
