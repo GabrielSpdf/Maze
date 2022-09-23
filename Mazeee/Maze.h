@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <conio.h>
 
-#define LINHA 20   /*Quantidade de linhas da matriz*/
-#define COLUNA 20  /*Quantidade de colunas da matriz*/
+#define FACIL 5
+#define DIFICIL 20 /*Nivel de dificuldade*/
+
 
 /*Estrutura da arvore*/
 typedef struct arvore
@@ -80,11 +81,11 @@ void free_tree (Tree* arvore)
 }
 
 /*Funcao para verificar a posicao inicial do jogador e armazena-la*/
-Player player_start(int mapa[LINHA][COLUNA], Player *jogador)
+Player player_start(int **mapa, int modo, Player *jogador)
 {
-	for(int i=0; i<LINHA; i++)
+	for(int i=0; i<modo; i++)
 	{
-		for(int j=0; j<COLUNA; j++)
+		for(int j=0; j<modo; j++)
 		{
 			if(mapa[i][j] == -1)
 			{
@@ -98,11 +99,11 @@ Player player_start(int mapa[LINHA][COLUNA], Player *jogador)
 }
 
 /*Funcao para verificar a posicao da saida e armazena-la*/
-Escape escape_pos(int mapa[LINHA][COLUNA]/*Recebe mapa*/, Escape *saida_pos)
+Escape escape_pos(int **mapa, int modo, Escape *saida_pos)
 {
-	for(int i=0; i<LINHA; i++)
+	for(int i=0; i<modo; i++)
 	{
-		for(int j=0; j<COLUNA; j++)
+		for(int j=0; j<modo; j++)
 		{
 			if(mapa[i][j] == -2)
 			{
@@ -117,11 +118,11 @@ Escape escape_pos(int mapa[LINHA][COLUNA]/*Recebe mapa*/, Escape *saida_pos)
 
 /*Funcao para imprimir o labirinto*/
 /*Nota: Fiz uso da tabela ASCII para ficar esteticamente mais agradavel a visualizacao do labirinto*/
-void print_maze(int mapa[LINHA][COLUNA], Player *jogador, Escape *saida)
+void print_maze(int **mapa, int modo, Player *jogador, Escape *saida)
 {
-	for(int i=0; i<LINHA; i++)
+	for(int i=0; i<modo; i++)
    	{
-		for(int j=0; j<COLUNA; j++)
+		for(int j=0; j<modo; j++)
 		{
 			if(i == jogador->x && j == jogador->y)
 			{
@@ -217,7 +218,7 @@ int check_end(Player *jogador, Escape *saida, Tree* arvore)
 		return 1;
 }
 
-	int mapa[LINHA][COLUNA] = {
+	int mapa3[DIFICIL][DIFICIL] = {
 	{0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	{0, 278, 279, 280, 281, 282 , 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 0},
 	{0, 0, 0, 275, 0, 0, 276, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 277, 0},
@@ -239,4 +240,19 @@ int check_end(Player *jogador, Escape *saida, Tree* arvore)
     {0, 133, 132, 131, 0, 127, 126, 128, 129, 0, 108, 107, 106, 0, -1, 0, 200, 201, 202, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0}};
 
-	/*Os valores vao de 101 a 295*/
+    int mapa1[FACIL][FACIL] = {
+        {0, -2, 0, 0, 0},
+        {0, 1, 1, 1, 0},
+        {0, 1, 1, 1, 0},
+        {0, 1, 1, -1, 0},
+        {0, 1, 1, -3, 0}
+    };
+
+    void dificuldadeFacil(int *map)
+    {
+        map = *mapa1;
+    }
+    void dificuldadeDificil(int *map)
+    {
+        map = *mapa3;
+    }
