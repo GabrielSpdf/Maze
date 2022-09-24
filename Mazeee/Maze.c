@@ -86,7 +86,7 @@ int main()
 
 
     
-    while(check_end(&jogador, &saida, arvore) != 0) /*Enquanto o jogador não chegar na posição final*/
+    while(check_end(&jogador, &saida, arvore)) /*Enquanto o jogador não chegar na posição final*/
 	{
 		system("cls"); /*Limpar a tela*/
 		print_visible(mapa, modo, &jogador, &saida); /*Imprimir labirinto*/
