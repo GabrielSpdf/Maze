@@ -6,15 +6,6 @@
 #define MEDIO 10
 #define DIFICIL 20 /*Nivel de dificuldade*/
 
-
-/*Estrutura da arvore*/
-typedef struct arvore
-{
-    int info;
-    struct arvore *esq;
-    struct arvore *dir;
-} Tree;
-
 /*Estrutura para armazenar a posicao do jogador no mapa*/
 typedef struct
 {
@@ -29,197 +20,213 @@ typedef struct
    int y;
 } Escape;
 
-/*Funcao para inicializar a arvore*/
-Tree* initialize_tree ()
-{
-    return NULL;
-}
 
-/*Funcao para inserir elemento na arvore*/
-Tree* insert_element (Tree* arvore, int num)
-{
-    if(arvore == NULL)
+    /*Estrutura da arvore*/
+    typedef struct arvore
     {
-        arvore = (Tree*) malloc (sizeof(Tree));
-        arvore->info = num;
-        arvore-> esq = NULL;
-        arvore->dir = NULL;
+        int info;
+        struct arvore *esq;
+        struct arvore *dir;
+    } Tree;
+
+    /*Funcao para inicializar a arvore*/
+    Tree* initialize_tree ()
+    {
+        return NULL;
     }
 
-    else
+    /*Funcao para inserir elemento na arvore*/
+    Tree* insert_element (Tree* arvore, int num)
     {
-        if(num < arvore->info)
+        if(arvore == NULL)
         {
-            arvore->esq = insert_element(arvore->esq, num);
+            arvore = (Tree*) malloc (sizeof(Tree));
+            arvore->info = num;
+            arvore-> esq = NULL;
+            arvore->dir = NULL;
         }
 
         else
         {
-            if(num > arvore->info)
+            if(num < arvore->info)
             {
-                arvore->dir = insert_element(arvore->dir, num);
+                arvore->esq = insert_element(arvore->esq, num);
             }
 
             else
             {
-                arvore->info = num;
+                if(num > arvore->info)
+                {
+                    arvore->dir = insert_element(arvore->dir, num);
+                }
+
+                else
+                {
+                    arvore->info = num;
+                }
             }
+        }
+
+        return arvore;
+    }
+
+    /*Funcao para liberar o espaco alocado da arvore*/
+    void free_tree (Tree* arvore)
+    {
+        if (arvore != NULL)
+        {
+            free_tree(arvore->esq);
+            free_tree(arvore->dir);
+            free(arvore);
         }
     }
 
-    return arvore;
-}
-
-/*Funcao para liberar o espaco alocado da arvore*/
-void free_tree (Tree* arvore)
-{
-    if (arvore != NULL)
+    /*Funcao para verificar a posicao inicial do jogador e armazena-la*/
+    Player player_start(int **mapa, int modo, Player *jogador)
     {
-        free_tree(arvore->esq);
-        free_tree(arvore->dir);
-        free(arvore);
+        for(int i=0; i<modo; i++)
+        {
+            for(int j=0; j<modo; j++)
+            {
+                if(mapa[i][j] == -1)
+                {
+                    jogador->x = i;
+                    jogador->y = j;
+                }
+            }
+        }
+
+        return *jogador;
     }
-}
 
-/*Funcao para verificar a posicao inicial do jogador e armazena-la*/
-Player player_start(int **mapa, int modo, Player *jogador)
-{
-	for(int i=0; i<modo; i++)
-	{
-		for(int j=0; j<modo; j++)
-		{
-			if(mapa[i][j] == -1)
-			{
-				jogador->x = i;
-				jogador->y = j;
-			}
-		}
-	}
-
-	return *jogador;
-}
-
-/*Funcao para verificar a posicao da saida e armazena-la*/
-Escape escape_pos(int **mapa, int modo, Escape *saida_pos)
-{
-	for(int i=0; i<modo; i++)
-	{
-		for(int j=0; j<modo; j++)
-		{
-			if(mapa[i][j] == -2)
-			{
-				saida_pos->x = i;
-				saida_pos->y = j;
-			}
-		}
-	}
-
-	return *saida_pos;
-}
-
-/*Funcao para imprimir o labirinto*/
-/*Nota: Fiz uso da tabela ASCII para ficar esteticamente mais agradavel a visualizacao do labirinto*/
-void print_maze(int **mapa, int modo, Player *jogador, Escape *saida)
-{
-	for(int i=0; i<modo; i++)
-   	{
-		for(int j=0; j<modo; j++)
-		{
-			if(i == jogador->x && j == jogador->y)
-			{
-				printf(" %c ", 207); /*Jogador*/
-			}
-
-			else if(mapa[i][j] == -3)
-			{
-				printf(" %c ", 178); /*Entrada*/
-			}
-
-			else if(i == saida->x && j == saida->y)
-			{
-				printf(" %c ", 176); /*Saida*/
-			}
-
-			else if(mapa[i][j]>=1 || mapa[i][j] == -1)
-			{
-				printf("   "); /*Caminho disponível*/
-			}
-
-			else if(!(mapa[i][j]))
-			{
-				printf(" %c ", 254); /*Parede*/
-			}
-		}
-
-		printf("\n");
-   	}
-}
-
-/*Funcao para ordenar os valores em pre-ordem*/
-void pre_ordem (Tree* arvore)
-{
-    if(arvore != NULL)
+    /*Funcao para verificar a posicao da saida e armazena-la*/
+    Escape escape_pos(int **mapa, int modo, Escape *saida_pos)
     {
-        printf("%d ", arvore->info);
-        pre_ordem(arvore->esq);
-        pre_ordem(arvore->dir);
-    }
-}
+        for(int i=0; i<modo; i++)
+        {
+            for(int j=0; j<modo; j++)
+            {
+                if(mapa[i][j] == -2)
+                {
+                    saida_pos->x = i;
+                    saida_pos->y = j;
+                }
+            }
+        }
 
-/*Funcao para ordenar os valores em in-ordem*/
-void in_ordem (Tree* arvore)
-{
-    if(arvore != NULL)
+        return *saida_pos;
+    }
+
+    void print_visible(int **mapa, int modo, Player *jogador, Escape *saida)
     {
-        in_ordem(arvore->esq);
-        printf("%d ", arvore->info);
-        in_ordem(arvore->dir);
-    }
-}
+        for(int i=0; i<modo; i++)
+        {
+            for(int j=0; j<modo; j++)
+            {
+                if(i == jogador->x && j == jogador->y)
+                {
+                    printf(" %c ", 207); /*Jogador*/
+                }
 
-/*Funcao para ordenar os valores em pos-ordem*/
-void pos_ordem (Tree* arvore)
-{
-    if(arvore != NULL)
+                else if((i == jogador->x-1 && j == jogador->y) || (i == jogador->x+1 && j == jogador->y) || (i == jogador->x && j == jogador->y-1) || (i == jogador->x && j == jogador->y+1) || (i == jogador->x-1 && j == jogador->y-1) || (i == jogador->x+1 && j == jogador->y+1) || (i == jogador->x-1 && j == jogador->y+1) || (i == jogador->x+1 && j == jogador->y-1))
+                {
+                    if(mapa[i][j] == -3)
+                    {
+                        printf(" %c ", 178); /*Entrada*/
+                    }
+
+                    else if(i == saida->x && j == saida->y)
+                    {
+                        printf(" %c ", 176); /*Saida*/
+                    }
+
+                    else if(mapa[i][j]>=1 || mapa[i][j] == -1)
+                    {
+                        printf("   "); /*Caminho disponível*/
+                    }
+
+                    else if(!(mapa[i][j]))
+                    {
+                        printf(" %c ", 254); /*Parede*/
+                    }
+                }
+
+                else
+                {
+                    printf(" %c ", 46);
+                }
+
+            }
+
+            printf("\n");
+        }
+    }
+
+    /*Funcao para ordenar os valores em pre-ordem*/
+    void pre_ordem (Tree* arvore)
     {
-        pos_ordem(arvore->esq);
-        pos_ordem(arvore->dir);
-        printf("%d ", arvore->info);
+        if(arvore != NULL)
+        {
+            printf("%d ", arvore->info);
+            pre_ordem(arvore->esq);
+            pre_ordem(arvore->dir);
+        }
     }
-}
 
-/*Funcao para verificar se o jogador chegou no final do labirinto*/
-int check_end(Player *jogador, Escape *saida, Tree* arvore)
-{
-	if(jogador->x == saida->x && jogador->y == saida->y)
-	{
-		printf("Voce completou o labirinto. Parabens!\n\n\n");
+    /*Funcao para ordenar os valores em in-ordem*/
+    void in_ordem (Tree* arvore)
+    {
+        if(arvore != NULL)
+        {
+            in_ordem(arvore->esq);
+            printf("%d ", arvore->info);
+            in_ordem(arvore->dir);
+        }
+    }
 
-		puts("NOTAS.");
-		puts("O numero -1 se refere a posicao inicial do jogador, ou seja, onde ele comecou o labirinto");
-		puts("O numero -2 se refere a porta de saida do labirinto, ou seja, onde o jogador terminou o labirinto\n\n");
+    /*Funcao para ordenar os valores em pos-ordem*/
+    void pos_ordem (Tree* arvore)
+    {
+        if(arvore != NULL)
+        {
+            pos_ordem(arvore->esq);
+            pos_ordem(arvore->dir);
+            printf("%d ", arvore->info);
+        }
+    }
 
-		printf("Ordenacao Pre-Ordem: ");
-		pre_ordem(arvore);
-		puts("\n");
+    /*Funcao para verificar se o jogador chegou no final do labirinto*/
+    int check_end(Player *jogador, Escape *saida, Tree* arvore)
+    {
+        if(jogador->x == saida->x && jogador->y == saida->y)
+        {
+            printf("Voce completou o labirinto. Parabens!\n\n\n");
 
-		printf("Ordenacao Pos-Ordem: ");
-		pos_ordem(arvore);
-		puts("\n");
+            puts("NOTAS.");
+            puts("O numero -1 se refere a posicao inicial do jogador, ou seja, onde ele comecou o labirinto");
+            puts("O numero -2 se refere a porta de saida do labirinto, ou seja, onde o jogador terminou o labirinto\n\n");
 
-		printf("Ordenacao In-Ordem: ");
-		in_ordem(arvore);
-		puts("\n");
+            printf("Ordenacao Pre-Ordem: ");
+            pre_ordem(arvore);
+            puts("\n");
 
-		free_tree(arvore);
+            printf("Ordenacao Pos-Ordem: ");
+            pos_ordem(arvore);
+            puts("\n");
 
-		exit(1);
-	}
-	else
-		return 1;
-}
+            printf("Ordenacao In-Ordem: ");
+            in_ordem(arvore);
+            puts("\n");
 
-    int mapa1[INTRODUCAO][INTRODUCAO] = {
+            free_tree(arvore);
+
+            exit(1);
+        }
+        else
+            return 1;
+    }
+
+        int mapa1[INTRODUCAO][INTRODUCAO] = {
         {0, -2, 0, 0, 0},
         {0, 10, 11, 12, 0},
         {0, 13, 0, 14, 0},
@@ -229,14 +236,14 @@ int check_end(Player *jogador, Escape *saida, Tree* arvore)
 
     int mapa2[MEDIO][MEDIO] = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 100, 101, 102, 0, 0, 0, 0},
-        {0, 103, 0, 104, 0, 105, 0, 0, 106, 0},
-        {0, 107, 108, 109, 0, 110, 0, 0, 111, 0},
-        {0, 0, 0, 112, 0, 113, 114, 0, 115, 0},
-        {0, 0, 116, 117, 0, 0, 118, 119, -2, -3},
-        {0, 120, 121, 0, 0, 0, 0, 123, 124, 0},
-        {0, 125, 0, 126, 127, 128, 0, 129, 0, 0},
-        {-2, 130, 131, 0, 0, 132, 133, 134, 0, 0},
+        {0, 0, 0, 500, 501, 502, 0, 0, 0, 0},
+        {0, 503, 0, 504, 0, 505, 0, 0, 506, 0},
+        {0, 507, 508, 509, 0, 510, 0, 0, 511, 0},
+        {0, 0, 0, 512, 0, 513, 514, 0, 515, 0},
+        {0, 0, 516, 517, 0, 0, 518, 519, -1, -3},
+        {0, 520, 521, 0, 0, 0, 0, 0, 524, 0},
+        {0, 525, 0, 526, 527, 528, 0, 529, 605, 0},
+        {-2, 530, 531, 0, 0, 532, 533, 534, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
@@ -261,5 +268,46 @@ int check_end(Player *jogador, Escape *saida, Tree* arvore)
     {0, 134, 0, 124, 0, 125, 0, 0, 130, 0, 109, 0, 105, 104, 101, 0, 203, 0, 204, 0},
     {0, 133, 132, 131, 0, 127, 126, 128, 129, 0, 108, 107, 106, 0, -1, 0, 200, 201, 202, 0},
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 0}};
+
+
+/*Funcao para imprimir o labirinto*/
+/*Nota: Fiz uso da tabela ASCII para ficar esteticamente mais agradavel a visualizacao do labirinto*/
+/*void print_maze(int **mapa, int modo, Player *jogador, Escape *saida)
+{
+	for(int i=0; i<modo; i++)
+   	{
+		for(int j=0; j<modo; j++)
+		{
+			if(i == jogador->x && j == jogador->y)
+			{
+				printf(" %c ", 207); /*Jogador
+			}
+
+			else if(mapa[i][j] == -3)
+			{
+				printf(" %c ", 178); /*Entrada
+			}
+
+			else if(i == saida->x && j == saida->y)
+			{
+				printf(" %c ", 176); /*Saida
+			}
+
+			else if(mapa[i][j]>=1 || mapa[i][j] == -1)
+			{
+				printf("   "); /*Caminho disponível
+			}
+
+			else if(!(mapa[i][j]))
+			{
+				printf(" %c ", 254); /*Parede
+			}
+		}
+
+		printf("\n");
+   	}
+}*/
+
+    
 
 

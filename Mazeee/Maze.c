@@ -2,14 +2,14 @@
 
 int main()
 {
-    char input; /*Comando do usuario*/
-	Player jogador; 
-	Escape saida;
-	Tree* arvore;
-
     int escolher=0;
     int modo;
     int **mapa; 
+    char input; /*Comando do usuario*/
+    Player jogador; 
+    Escape saida;   
+    Tree* arvore;
+
 
     printf("Selecione a dificuldade: \n");
     printf("1 - Facil\n2 - Medio\n3 - Dificil\n");
@@ -84,10 +84,12 @@ int main()
 
 	arvore = insert_element(arvore, mapa[jogador.x][jogador.y]); /*Insere a posicao inicial na arvore*/
 
-	while(check_end(&jogador, &saida, arvore) != 0) /*Enquanto o jogador não chegar na posição final*/
+
+    
+    while(check_end(&jogador, &saida, arvore) != 0) /*Enquanto o jogador não chegar na posição final*/
 	{
 		system("cls"); /*Limpar a tela*/
-		print_maze(mapa, modo, &jogador, &saida); /*Imprimir labirinto*/
+		print_visible(mapa, modo, &jogador, &saida); /*Imprimir labirinto*/
 
 		fflush(stdin); /*Limpa o buffer para evitar erros de leitura*/
 		input = getch(); /*Espera o comando do usuario*/
