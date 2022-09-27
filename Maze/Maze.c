@@ -1,5 +1,12 @@
 #include "Maze.h"
 
+/*Adicionar texto para cada fase
+
+Introdução -> Fácil -> Médio -> Difícil 
+Sugestão: Deixar o mapa "cego" apenas no difícil
+
+Implementar progressão de fase*/
+
 int main()
 {
     int escolher=0;
